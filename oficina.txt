@@ -1,0 +1,86 @@
+-- Criação do banco de dados
+CREATE DATABASE oficina;
+USE oficina;
+
+-- Tabela de Clientes
+CREATE TABLE Cliente (
+    id_cliente INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    endereco VARCHAR(255),
+    telefone VARCHAR(15)
+);
+
+-- Tabela de Veículos
+CREATE TABLE Veiculo (
+    id_veiculo INT AUTO_INCREMENT PRIMARY KEY,
+    placa VARCHAR(10) UNIQUE NOT NULL,
+    modelo VARCHAR(100),
+    marca VARCHAR(50),
+    ano INT,
+    id_cliente INT,
+    FOREIGN KEY (id_cliente) REFERENCES Cliente(id_cliente)
+);
+
+-- Tabela de Mecânicos
+CREATE TABLE Mecanico (
+    id_mecanico INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    endereco VARCHAR(255),
+    especialidade VARCHAR(100)
+);
+
+-- Tabela de Ordem de Serviço (OS)
+CREATE TABLE OrdemServico (
+    id_os INT AUTO_INCREMENT PRIMARY KEY,
+    data_emissao DATE NOT NULL,
+    data_conclusao DATE,
+    valor_total DECIMAL(10, 2),
+    status VARCHAR(50) NOT NULL,
+    id_veiculo INT,
+    FOREIGN KEY (id_veiculo) REFERENCES Veiculo(id_veiculo)
+);
+
+-- Tabela de Serviços
+CREATE TABLE Servico (
+    id_servico INT AUTO_INCREMENT PRIMARY KEY,
+    descricao VARCHAR(255) NOT NULL,
+    valor_mao_obra DECIMAL(10, 2) NOT NULL
+);
+
+-- Tabela de Peças
+CREATE TABLE Peca (
+    id_peca INT AUTO_INCREMENT PRIMARY KEY,
+    descricao VARCHAR(255) NOT NULL,
+    valor DECIMAL(10, 2) NOT NULL
+);
+
+-- Tabela de Itens da Ordem de Serviço (associação entre OS e serviços)
+CREATE TABLE ItemServico (
+    id_item_servico INT AUTO_INCREMENT PRIMARY KEY,
+    id_os INT,
+    id_servico INT,
+    quantidade INT NOT NULL,
+    valor DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (id_os) REFERENCES OrdemServico(id_os),
+    FOREIGN KEY (id_servico) REFERENCES Servico(id_servico)
+);
+
+-- Tabela de Itens da OS (associação entre OS e peças)
+CREATE TABLE ItemPeca (
+    id_item_peca INT AUTO_INCREMENT PRIMARY KEY,
+    id_os INT,
+    id_peca INT,
+    quantidade INT NOT NULL,
+    valor DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (id_os) REFERENCES OrdemServico(id_os),
+    FOREIGN KEY (id_peca) REFERENCES Peca(id_peca)
+);
+
+-- Tabela de Equipes (associação entre OS e mecânicos)
+CREATE TABLE Equipe (
+    id_equipe INT AUTO_INCREMENT PRIMARY KEY,
+    id_os INT,
+    id_mecanico INT,
+    FOREIGN KEY (id_os) REFERENCES OrdemServico(id_os),
+    FOREIGN KEY (id_mecanico) REFERENCES Mecanico(id_mecanico)
+);
